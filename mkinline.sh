@@ -60,14 +60,14 @@ while getopts "i:o:h" options; do
   esac
 done
 
-# Dump the input file without the "tls-auth", "ca", "cert" and "key" entries
-# into the output file.
-grep -v -E "(^ca|^cert|^key|^tls-auth) " "$INPUT" > "$OUTPUT"
-
 # Verify the options
 if [ -z "$INPUT" ]; then param_missing "-i"; fi
 if [ -z "$OUTPUT" ]; then param_missing "-o"; fi
 if ! `touch "$OUTPUT"`; then file_not_writable "$OUTPUT"; fi
+
+# Dump the input file without the "tls-auth", "ca", "cert" and "key" entries
+# into the output file.
+grep -v -E "(^ca|^cert|^key|^tls-auth) " "$INPUT" > "$OUTPUT"
 
 # Get filenames from the input configuration file
 CA=$(get_filename_from_config "ca" "$INPUT")
