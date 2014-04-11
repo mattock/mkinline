@@ -31,12 +31,7 @@ cert_not_added() {
 }
 
 get_filename_from_config() {
-    grep -E "^$1 " $2|awk ' { print $NF } '
-}
-
-get_tls_auth_filename_from_config() {
-    grep -E "^$1 " $2|awk ' { print $NF - 1 } '
-
+    grep -E "^$1 " $2|awk ' { printf $NF } '
 }
 
 append_cert() {
@@ -71,12 +66,12 @@ grep -v -E "(^ca|^cert|^key|^tls-auth) " "$INPUT" > "$OUTPUT"
 
 # Get filenames from the input configuration file
 CA=$(get_filename_from_config "ca" "$INPUT")
-TLS_AUTH=`grep -E "^tls-auth " "$INPUT"|awk ' { print $(NF-1) } '`
+TLS_AUTH=`grep -E "^tls-auth " "$INPUT"|awk ' { printf $(NF-1) } '`
 CERT=$(get_filename_from_config "cert" "$INPUT")
 KEY=$(get_filename_from_config "key" "$INPUT")
-KEY_DIRECTION=`grep -E "^tls-auth " "$INPUT"|awk ' { print $NF } '`
+KEY_DIRECTION=`grep -E "^tls-auth " "$INPUT"|awk ' { printf $NF } '`
 
-if ! [ -z "TLS_AUTH" ] && [ -r "$TLS_AUTH" ]; then append_cert "tls-auth" "$TLS_AUTH" "$OUTPUT" "$KEY_DIRECTION"; else cert_not_added "tls-auth key"; fi
+if ! [ -z "$TLS_AUTH" ] && [ -r "$TLS_AUTH" ]; then append_cert "tls-auth" "$TLS_AUTH" "$OUTPUT" "$KEY_DIRECTION"; else cert_not_added "tls-auth key"; fi
 if ! [ -z "$CA" ] && [ -r "$CA" ]; then append_cert "ca" "$CA" "$OUTPUT"; else cert_not_added "ca certificate"; fi
 if ! [ -z "$CERT" ] && [ -r "$CERT" ]; then append_cert "cert" "$CERT" "$OUTPUT"; else cert_not_added "client certificate"; fi
-if ! [ -z "KEY" ] && [ -r "$KEY" ]; then append_cert "key" "$KEY" "$OUTPUT"; else cert_not_added "client key"; fi
+if ! [ -z "$KEY" ] && [ -r "$KEY" ]; then append_cert "key" "$KEY" "$OUTPUT"; else cert_not_added "client key"; fi
